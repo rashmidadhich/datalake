@@ -1,0 +1,4 @@
+account_id,customer_name,email_masked,signup_date,source_system,plan_id,status
+ACC-0096,Priya Okoye,p***@trb5***.com,2026-07-23,platform_v2,PLAN-STUDENT,active
+ACC-0019,Sam Khan,s***@trb1***.com,2026-07-20,platform_v2,PLAN-GOLD,active
+ACC-0063,Chen Kim,c***@trb6***.com,2026-08-22,platform_v2,PLAN-PLATINUM,active
