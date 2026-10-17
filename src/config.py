@@ -26,8 +26,10 @@ QUARANTINE_BILLING_ACCOUNTS = QUARANTINE_DIR / "billing_accounts_quarantine"
 QUARANTINE_INVOICES = QUARANTINE_DIR / "invoices_quarantine"
 
 # --------------------------------------------------------------------------- #
-# Controlled quarantine reason vocabulary (owned by pipeline_guardrails/SKILL.md)
-# Extend only by documenting the addition in that skill.
+# Controlled quarantine reason vocabulary. pipeline_guardrails/SKILL.md requires
+# the vocabulary to be declared in exactly one place, with every quarantining
+# skill referencing that declaration; this dict is that single declaration.
+# Extend it only by documenting the new reason in that skill.
 # --------------------------------------------------------------------------- #
 QUARANTINE_REASONS = {
     "CONFLICTING_KEY": "conflicting_key",

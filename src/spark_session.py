@@ -45,13 +45,21 @@ def _ensure_windows_hadoop_env() -> None:
 
 
 def get_spark(app_name: str = "trb-silver-pipeline") -> SparkSession:
-    """Return (creating if needed) a local[*] SparkSession."""
+    """Return (creating if needed) a local SparkSession.
+
+    The master can be overridden with ``TRB_SPARK_MASTER`` (the test suite uses
+    ``local[2]``): every core in ``local[*]`` becomes a task slot, and Spark
+    starts one Python worker per slot, which is by far the slowest part of a run
+    on Windows.
+    """
     _ensure_windows_hadoop_env()
+    master = os.environ.get("TRB_SPARK_MASTER", "local[*]")
     spark = (
         SparkSession.builder
         .appName(app_name)
-        .master("local[*]")
+        .master(master)
         .config("spark.sql.shuffle.partitions", "4")
+        .config("spark.default.parallelism", "4")
         .config("spark.ui.enabled", "false")
         .config("spark.sql.session.timeZone", "UTC")
         .getOrCreate()

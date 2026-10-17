@@ -6,8 +6,8 @@ Per the assignment's Required Architecture:
     deduplicate against existing silver -> apply SCD2 for tracked changes ->
     write silver / quarantine
 
-Pipeline guardrails are checked after every batch, and a per-batch line is
-written to ``outputs/artifacts/pipeline_log.txt``.
+Pipeline guardrails are checked after every batch, and a per-batch row is
+written to ``outputs/artifacts/pipeline_log.md``.
 """
 
 from pyspark.sql import DataFrame, SparkSession

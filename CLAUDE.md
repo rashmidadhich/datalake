@@ -24,18 +24,25 @@ For every task, read the matching file under `.claude/skills/<skill-name>/SKILL.
 
 The narrative evidence (gap found -> change made -> validation) lives in
 `outputs/artifacts/skill_driven_evidence_log.md`; the machine log is
-`outputs/artifacts/pipeline_log.txt`.
+`outputs/artifacts/pipeline_log.md`.
 
 ## Project structure
 
 - `data/` - baseline bronze CSVs (Batch 1) and `data/sample_batches/` (Batches
   2-5), each in its own folder with a README.
 - `.claude/skills/` - the five skill folders (SKILL.md + README.md each).
-- `src/` - the implementation; each module maps to one capability.
+- `src/` - the implementation; exactly the ten modules the Helper Guide lists,
+  one module per capability.
+- `tools/` - two reviewer-facing helpers that only read the written Parquet
+  files and publish evidence: `tools/evidence_dump.py` and
+  `tools/verify_outputs.py`.
 - `silver/` - silver-layer output tables (Parquet), created at runtime.
 - `quarantine/` - quarantined-record output tables (Parquet), created at runtime.
 - `tests/` - the pytest suite (Task 9).
-- `outputs/artifacts/` - non-code evidence (evidence log, pytest report, run log).
+- `outputs/artifacts/` - non-code evidence (evidence log, run log, pytest report,
+  evidence dump, output verification, rubric compliance check).
+- `SETUP_AND_RUN.md` - how to rebuild the environment and re-run everything on a
+  fresh machine.
 
 ## Conventions
 
@@ -57,7 +64,7 @@ The narrative evidence (gap found -> change made -> validation) lives in
 ## Running
 
 ```bash
-# Environment (see README for Windows Hadoop/winutils setup)
+# Environment (full fresh-machine guide: SETUP_AND_RUN.md)
 python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 
@@ -66,4 +73,10 @@ python -m src.pipeline
 
 # Required test suite (Task 9)
 python -m pytest -v
+
+# Re-check the written Parquet tables (pandas, no Spark needed)
+python -m tools.verify_outputs
+
+# Reviewer dump of counts, history rows and quarantine rows (uses Spark)
+python -m tools.evidence_dump
 ```

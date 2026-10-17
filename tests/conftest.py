@@ -6,6 +6,7 @@ rather than re-running Spark per test.
 """
 
 import hashlib
+import os
 import sys
 from pathlib import Path
 
@@ -14,6 +15,10 @@ import pytest
 ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
+
+# Two task slots instead of one per core: Spark starts a Python worker per slot
+# and worker startup dominates the runtime of this suite on Windows.
+os.environ.setdefault("TRB_SPARK_MASTER", "local[2]")
 
 from src import config, ingest  # noqa: E402
 from src.pipeline import run_all  # noqa: E402
@@ -33,9 +38,16 @@ def pipeline_run(spark):
     return run_all(spark)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def silver(spark, pipeline_run):
-    """Read every output table after the pipeline has run."""
+    """Read every output table after the pipeline has run.
+
+    Function-scoped on purpose. Several tests rewrite the silver tables (the
+    idempotency replay re-runs Batches 2-5), and a DataFrame created from a path
+    remembers the part-file names it saw when it was read. A session-scoped
+    handle reused after such an overwrite would point at files that no longer
+    exist, so each test gets a fresh read.
+    """
     return {
         "accounts": ingest.read_table(spark, config.SILVER_BILLING_ACCOUNTS),
         "plans": ingest.read_table(spark, config.SILVER_PLAN_CATALOG),

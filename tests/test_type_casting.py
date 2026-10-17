@@ -10,9 +10,16 @@ from pyspark.sql import functions as F
 
 from src import config, ingest, type_casting
 
+# The all-string shape the CSV reader declares (see ``ingest._raw_schema``):
+# every account column is a nullable string and the reader appends
+# ``_corrupt_record``. Built from the public column list so it cannot drift, and
+# passed explicitly so Spark never infers - a one-row batch has a null
+# _corrupt_record, which inference cannot type.
+RAW_ACCOUNT_SCHEMA = ", ".join(f"{c} string" for c in ingest.ACCOUNT_COLS + [ingest.CORRUPT_COL])
+
 
 def _raw_accounts(spark, rows):
-    return spark.createDataFrame(rows, ingest.ACCOUNT_COLS + [ingest.CORRUPT_COL])
+    return spark.createDataFrame(rows, RAW_ACCOUNT_SCHEMA)
 
 
 def test_mm_dd_yyyy_is_cast_and_plan_id_is_normalized(spark):

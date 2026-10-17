@@ -7,6 +7,9 @@ resolution, with cross-cutting pipeline guardrails and a pytest suite.
 
 ## Setup
 
+`SETUP_AND_RUN.md` is the full fresh-machine guide (JDK, winutils, venv, run,
+verify). The short version:
+
 ```bash
 python -m venv .venv
 # Windows
@@ -39,11 +42,16 @@ See `CLAUDE.md` for the full structure and conventions. In short:
 - `data/` - input CSVs (Batch 1 baseline + Batches 2-5 sample batches).
 - `.claude/skills/` - the five skill folders. Two were modified and two authored
   from scratch for this assignment (see `CLAUDE.md`).
-- `src/` - the pipeline implementation.
+- `src/` - the pipeline implementation (exactly the ten modules the Helper
+  Guide lists).
+- `tools/` - reviewer helpers: `tools/verify_outputs.py` (pandas checks of the
+  written Parquet tables) and `tools/evidence_dump.py` (Spark evidence dump).
 - `silver/`, `quarantine/` - Parquet outputs, created when the pipeline runs.
 - `tests/` - the pytest suite (Task 9).
 - `outputs/artifacts/` - evidence: skill-driven evidence log, pipeline run log,
-  pytest report.
+  pytest report, evidence dump, output verification, rubric compliance check.
+- `SETUP_AND_RUN.md` - how to rebuild the environment on another machine and
+  re-run the pipeline, the tests and the verification.
 
 ## Running the pipeline
 
@@ -52,8 +60,8 @@ python -m src.pipeline
 ```
 
 This loads Batch 1 (baseline) then applies Batches 2-5 in order, checking the
-guardrails after every batch and writing a line per batch to
-`outputs/artifacts/pipeline_log.txt`.
+guardrails after every batch and writing a row per batch to
+`outputs/artifacts/pipeline_log.md`.
 
 Expected outcomes:
 
