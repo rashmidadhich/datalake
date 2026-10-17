@@ -61,11 +61,11 @@ the three cases apart.
 Every incoming row whose business key already exists in the target resolves
 to exactly one of:
 
-1. **Quarantine** — a true byte-identical duplicate is not double-quarantined
-   (it is simply not re-quarantined; see Decision Rules), and a row where an
-   identity-defining column differs from the existing row is quarantined with
-   a reason, since this indicates corrupted or misattributed data rather than
-   a real update.
+1. **Quarantine** — a row where an identity-defining column differs from the
+   existing row is quarantined with a controlled reason code (e.g.
+   `conflicting_key`), since this indicates corrupted or misattributed data
+   rather than a real update. A byte-identical duplicate is never
+   re-quarantined; it resolves to "retain unchanged" (see Decision Rules).
 2. **Overwrite (update, no history)** — a row where only mutable /
    business-state columns differ from the existing row is applied to silver by
    overwriting those columns on the existing record. No `valid_from`/`valid_to`
@@ -109,6 +109,25 @@ by which *columns* differ, not merely whether *any* column differs.
   partial update.
 - Never use a surrogate value generated during ingestion (e.g. an
   auto-incrementing id) as part of the duplicate/identity check.
+- **Boundary and ordering with adjacent skills — check this before
+  quarantining.** A repeated business key is not automatically this skill's
+  concern. Classify the repeated key first, in this order:
+  1. If the incoming row carries an effective date for a tracked attribute
+     (e.g. an `effective_date` alongside a `plan_id`), it is a
+     **tracked-attribute change**, not a retry — hand it to the SCD2 history
+     skill, which closes the prior row and appends a new one.
+  2. Else, if the incoming row disagrees with the existing identity on the
+     identity-defining attributes (e.g. a customer name, signup date, or
+     source system that cannot belong to the same real-world entity), it may
+     be a **different physical entity reusing the key** — hand it to the
+     entity-resolution skill, which assigns a distinct surrogate identity.
+  3. Only rows that match neither case are deduplicated by this skill.
+  Getting this order wrong is worse than not deduplicating: it quarantines
+  legitimate updates, plan changes, and new customers as if they were
+  corrupt data.
+- Quarantine reason codes must come from the pipeline's controlled vocabulary
+  (owned by the pipeline-guardrails skill), never free text, and never a
+  value invented ad hoc for one batch.
 
 ## Implementation Guidance
 
@@ -159,6 +178,10 @@ new_rows = incoming_df.join(existing_df, on=business_key, how="left_anti")
 - An empty batch should succeed and add zero rows.
 - A row changes both a mutable and an identity-defining column — this must
   still be quarantined, not partially overwritten.
+- The repeated key actually represents a tracked-attribute change or a reused
+  key belonging to a different real-world entity — applying this skill's
+  quarantine rule instead of handing the row to the SCD2 or entity-resolution
+  skill corrupts history or blocks a real customer.
 
 ## Common Mistakes
 

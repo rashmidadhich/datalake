@@ -22,9 +22,12 @@ rows whose format is unrecognized are flagged, not cast.
 Batch 3 has 3 rows in `MM/DD/YYYY` format (vs. `YYYY-MM-DD` in Batch 1) plus
 inconsistent `plan_id` casing, and 1 row in a third, unrecognized long-form
 textual date format. Use this skill as provided - no modification is required
-- but you must add the pipeline-level logic (outside the skill file) that
-routes the flagged, unrecognized-format row to a quarantine output with a
-reason, per Task 3.
+- but the pipeline-level logic (outside the skill file) routes the flagged,
+unrecognized-format row to a quarantine output with a reason, per Task 3. Two
+data quirks are handled there: the unrecognized long-form date carries an
+unquoted comma (so Spark reports the row as `_corrupt_record`), and one batch
+declares `platform_v2` while writing legacy `yyyy-MM-dd` dates, so the caster
+falls back to an unambiguous known pattern as the skill permits.
 
 ## Using This Skill with SKILL.md
 

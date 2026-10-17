@@ -48,7 +48,9 @@ cover multiple simultaneous attribute changes on the same row.
 For any entity that has undergone a tracked change, querying its attribute as
 of a date before the change returns the old value, and querying it on or after
 the change returns the new value. At most one row per entity has
-`is_current = true` at any time.
+`is_current = true` at any time. When an out-of-order change arrives, either
+the timeline is rebuilt so intervals remain contiguous and non-overlapping, or
+the row is quarantined — never an inverted interval and never two open rows.
 
 ## Core Guidance
 
@@ -72,6 +74,22 @@ becomes false) and a new row is appended representing the new value.
   set to the effective date, `valid_to` set to null, and `is_current` set to
   true.
 - Historical rows are never deleted or overwritten once closed.
+- **Out-of-order effective date.** If the incoming `effective_date` is earlier
+  than the entity's current row's `valid_from`, a naive close-and-append
+  produces an inverted or overlapping interval. Do not silently reorder it and
+  do not write it as-is. Resolve it in one of two ways:
+  - **Rebuild the timeline** from every known event for the entity: insert the
+    new row at its correct chronological position and re-derive the
+    neighbouring rows' `valid_from`/`valid_to` so the intervals stay
+    contiguous and non-overlapping, ending with exactly one open row; or
+  - **Quarantine** the row with a controlled reason (e.g.
+    `out_of_order_effective_date`) when the timeline cannot be rebuilt safely
+    from the data at hand.
+  Either path must preserve the single-open-row invariant below.
+- A change whose stated prior value does not match the entity's current value
+  for the tracked attribute is stale, out of order, or misattributed — treat it
+  with the same out-of-order handling rather than closing the current row on
+  the strength of a value that disagrees with it.
 
 ## Implementation Guidance
 
@@ -106,6 +124,10 @@ result_df = closed_df.unionByName(new_row_df)
   value.
 - Assert the closed row's `valid_to` exactly equals the new row's `valid_from`,
   with no gap or overlap.
+- Ingest a change whose `effective_date` is earlier than the entity's current
+  `valid_from`; assert the result is either a correctly rebuilt, contiguous,
+  non-overlapping timeline with exactly one open row, or a quarantined row —
+  and never an inverted interval or a second open row.
 
 ## Common Failure Scenarios
 
@@ -115,6 +137,10 @@ result_df = closed_df.unionByName(new_row_df)
 - The new row is appended without closing the old one, leaving two open rows.
 - `valid_to` and the new row's `valid_from` are computed independently and
   drift apart by even one day, creating a gap where no row is valid.
+- An out-of-order `effective_date` is written by closing the current row even
+  though the change predates it, producing a row whose `valid_to` is earlier
+  than its own `valid_from` (an inverted interval) and silently corrupting the
+  entity's history.
 
 ## Common Mistakes
 

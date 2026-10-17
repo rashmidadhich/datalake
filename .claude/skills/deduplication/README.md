@@ -43,20 +43,30 @@ Output: every row resolves to exactly one of:
 
 ## Business Rules & Scenarios for This Assignment
 
-Batch 2 contains 6 invoice rows sharing keys with existing `invoices.csv`
-rows:
-- 4 are byte-identical retries -> retain unchanged.
-- 1 (`INV-00449`) differs only in `payment_status` (Pending -> Failed) -> a
-  legitimate status update -> overwrite in place, no history kept.
-- 1 (`INV-00122`) differs in `account_id`, an identity-defining column -> a
-  corrupted/misattributed row -> quarantine with reason `conflicting_key`.
+Batch 2 contains 6 invoice rows whose `invoice_id` already exists in
+`invoices.csv`. Verified against the actual baseline, the rows resolve as:
 
-As originally provided, this skill only defined the "identical row" and "new
-key" cases. Task 2 requires you to review the skill against Batch 2, identify
-that it does not yet distinguish a legitimate update from a genuine conflict,
-and modify the skill yourself to add the overwrite and quarantine rules
-before implementing - the update must be applied, not quarantined or
-dropped, and the conflict must be quarantined, not applied or dropped.
+- 2 are byte-identical retries (`INV-00449`, `INV-00122`) -> retain unchanged.
+- 0 differ only on mutable columns -> no legitimate status update occurs in
+  this batch.
+- 4 disagree on identity-defining columns (`INV-00113`, `INV-00220`,
+  `INV-00301`, `INV-00378` differ on `account_id` and `invoice_date`) ->
+  quarantine with reason `conflicting_key`.
+
+Data note: the assignment narrative describes 4 duplicates + 1 update + 1
+conflict, and the sample-batch README describes 4 duplicates + 2 conflicts;
+neither matches the CSV actually provided. The pipeline implements the data as
+written and the discrepancy is recorded in
+`outputs/artifacts/skill_driven_evidence_log.md`.
+
+This skill was **modified for Task 2** before implementation. As originally
+provided it already listed the three outcomes but did not define the boundary
+and ordering against the SCD2 and entity-resolution skills, and its quarantine
+expected-outcome item was self-contradictory. The modification added an ordered
+classification rule (route tracked-attribute changes to SCD2 and reused keys to
+entity resolution before quarantining), required reason codes to come from the
+controlled vocabulary, and clarified that a byte-identical duplicate is never
+quarantined.
 
 ## Boundary with Other Skills
 
@@ -70,7 +80,7 @@ dropped, and the conflict must be quarantined, not applied or dropped.
   `source_system`) (Batch 5) represents a different physical entity reusing a
   key, not a conflicting or updated record of the same entity. Route it to
   entity resolution, not to this skill's quarantine rule.
-- Pipeline ordering (type-cast -> dedup -> entity resolution -> SCD2 -> write)
+- Pipeline ordering (type-cast -> resolve identity -> dedup -> SCD2 -> write)
   is what keeps these three skills from competing for the same rows - by the
   time a row reaches this skill, it has already been type-cast, and any row
   that truly belongs to SCD2 or entity resolution is handled downstream, not

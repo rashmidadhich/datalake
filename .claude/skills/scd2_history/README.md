@@ -21,12 +21,12 @@ closed out, a new current row appended.
 
 Batch 4 has 5 plan-change events. Four have effective dates after the
 account's signup date, in normal order. One has an `effective_date` earlier
-than the account's own `signup_date` (out of order). As provided, this skill
-does not define what should happen in that case. Task 6 requires you to
-review the skill against Batch 4, identify this gap, and modify the skill
-yourself before implementing - if the modification doesn't fully resolve the
-ordering, the affected row must be quarantined rather than corrupting the
-account's history.
+than the account's own `signup_date` (out of order). This skill was **modified
+for Task 6** before implementation: as provided it did not define what to do
+with an out-of-order date, so the modification added a rule requiring either a
+correctly rebuilt contiguous timeline or quarantine with the controlled reason
+`out_of_order_effective_date` - never an inverted interval. The Batch 4
+out-of-order event is quarantined and the account's history is left intact.
 
 ## Using This Skill with SKILL.md
 

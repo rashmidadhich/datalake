@@ -3,54 +3,67 @@
 ## What this project is
 
 A PySpark pipeline that transforms bronze billing CSVs into a silver layer,
-demonstrating four capabilities: deduplication, type casting, SCD2 history
+demonstrating four capabilities - deduplication, type casting, SCD2 history
 tracking, and entity resolution - plus a shared guardrails layer and a pytest
-test suite. See `Stack AI Rewire - Data Engineering - Silver Layer -
-Assignment Doc.docx` for the full requirements and `Helper Guide - Silver
-Layer.docx` for the skill-driven workflow.
+test suite. See `Stack AI Rewire-Data Engineering-Silver Layer-Assignment_Doc.docx`
+for requirements and `Helper Guide- Silver Layer.docx` for the skill-driven
+workflow.
 
 ## Skill-driven workflow (read before writing code)
 
-For every task, read the matching file under `skills/<skill-name>/SKILL.md`
-*before* implementing. Two skills (`deduplication`, `scd2_history`) are
-provided as incomplete starting points and must be modified before you use
-them for Task 2 and Task 6 respectively - identify the gap first, edit the
-skill, then implement. Two skills (`entity_resolution`, `pipeline_guardrails`)
-are not provided at all and must be authored from scratch for Task 7 and Task
-8. `type_casting` is provided complete and used as-is.
+For every task, read the matching file under `.claude/skills/<skill-name>/SKILL.md`
+*before* implementing. Current state:
+
+| Skill | State |
+|---|---|
+| `.claude/skills/type_casting` | Provided complete - used as-is. |
+| `.claude/skills/deduplication` | **Modified for Task 2** (gap: boundary/ordering vs. SCD2 and entity resolution; controlled reason vocabulary). |
+| `.claude/skills/scd2_history` | **Modified for Task 6** (gap: out-of-order `effective_date` rule). |
+| `.claude/skills/entity_resolution` | **Authored from scratch for Task 7**. |
+| `.claude/skills/pipeline_guardrails` | **Authored from scratch for Task 8**. |
+
+The narrative evidence (gap found -> change made -> validation) lives in
+`outputs/artifacts/skill_driven_evidence_log.md`; the machine log is
+`outputs/artifacts/pipeline_log.txt`.
 
 ## Project structure
 
 - `data/` - baseline bronze CSVs (Batch 1) and `data/sample_batches/` (Batches
-  2-5), each in its own folder with a README describing what it tests.
-- `skills/` - the five skill folders described above.
-- `src/` - your implementation. Each module maps to one capability.
-- `silver/` - your pipeline's silver-layer output (created at runtime).
-- `quarantine/` - your pipeline's quarantined-record output (created at
-  runtime).
-- `tests/` - the required pytest suite (Task 9).
-- `outputs/artifacts/` - place non-code evidence here (logs, screenshots,
-  pytest reports, skill-driven evidence log).
+  2-5), each in its own folder with a README.
+- `.claude/skills/` - the five skill folders (SKILL.md + README.md each).
+- `src/` - the implementation; each module maps to one capability.
+- `silver/` - silver-layer output tables (Parquet), created at runtime.
+- `quarantine/` - quarantined-record output tables (Parquet), created at runtime.
+- `tests/` - the pytest suite (Task 9).
+- `outputs/artifacts/` - non-code evidence (evidence log, pytest report, run log).
 
 ## Conventions
 
 - Storage format: Parquet. SCD2 is implemented via explicit
-  read-close-append-write, not `MERGE INTO`.
+  read-close-append-write, **not** `MERGE INTO`.
 - Business keys: `account_id` (billing_accounts), `invoice_id` (invoices),
-  `plan_id` (plan_catalog).
-- Quarantine reason codes are a controlled vocabulary - see
-  `skills/pipeline_guardrails/SKILL.md` once you've authored it - do not use
-  free-text reasons.
-- Do not modify `type_casting/SKILL.md`. Do modify
-  `deduplication/SKILL.md` and `scd2_history/SKILL.md` before their respective
-  tasks. Do author `entity_resolution/SKILL.md` and
-  `pipeline_guardrails/SKILL.md` from scratch.
+  `plan_id` (plan_catalog). The SCD2 grain is the surrogate `entity_id`
+  (equal to `account_id` for original entities, `<account_id>:R` when a key is
+  reused by a different customer).
+- Quarantine reason codes are a controlled vocabulary owned by
+  `src/config.py` and documented in `pipeline_guardrails/SKILL.md`: never
+  free-text.
+- Writes are read-modify-write (rebuild the logical table from existing rows +
+  the batch delta) so they are non-destructive and idempotent.
+- Do not modify `type_casting/SKILL.md`. Modify `deduplication/SKILL.md` and
+  `scd2_history/SKILL.md` before their tasks (done). Author
+  `entity_resolution/SKILL.md` and `pipeline_guardrails/SKILL.md` (done).
 
 ## Running
 
 ```bash
-python -m venv .venv && source .venv/bin/activate
+# Environment (see README for Windows Hadoop/winutils setup)
+python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-python src/pipeline.py        # runs Batch 1 through Batch 5 in order
-pytest tests/ -v               # required test suite (Task 9)
+
+# Run Batch 1 through Batch 5 in order
+python -m src.pipeline
+
+# Required test suite (Task 9)
+python -m pytest -v
 ```
