@@ -1,0 +1,17 @@
+Command	Description
+python bronze_sync.py init	Creates bronze_ctl schema, quarantine tables, history, and monitoring views
+python bronze_sync.py discover	Registers tables, primary keys, and schema columns from Oracle
+python bronze_sync.py historic	Runs historic initial load with chunk-level idempotency guards
+python bronze_sync.py incr	Runs incremental replication with DQ and duplicate filtering
+python bronze_sync.py dq	Displays Data Quality and quarantine summary
+python bronze_sync.py schema	Displays schema evolution and drift history
+python bronze_sync.py verify	Verifies idempotency and duplicate integrity across all tables
+python bronze_sync.py status	Displays progress, active chunks, table lag, and alerts
+python bronze_sync.py check	Exits code 2 if unresolved critical alerts exist
+python bronze_sync.py mapping	Audits NZ SAP to CFA360 column mappings and sensitive fields
+python bronze_sync.py ui	Launches web dashboard on http://localhost:8080
+# Launch via bronze_sync CLI:
+python bronze_sync.py ui [--port 8080] [--host 0.0.0.0]
+
+# Or launch directly via dashboard.py:
+python dashboard.py [--port 8080]

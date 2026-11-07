@@ -1,0 +1,4 @@
+customer_id,customer_segment,signup_date,preferred_channel,city,loyalty_tier
+C-0091,Premium,2025-12-11,Online,Chennai,Gold
+C-0092,Regular,2026-02-18,Mobile App,Delhi,Silver
+C-0093,Budget,2025-08-30,Partner,Mumbai,Bronze

@@ -1,0 +1,28 @@
+# Secrets — never commit
+.env
+*.env
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+env/
+
+# Logs
+logs/
+*.log
+
+# Spark local artifacts
+spark-warehouse/
+metastore_db/
+derby.log
+*.crc
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

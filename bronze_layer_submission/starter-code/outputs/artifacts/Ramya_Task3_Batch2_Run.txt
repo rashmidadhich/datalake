@@ -1,0 +1,6 @@
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+sales_transactions: read 3, wrote 0, skipped 3 existing order_id values
+SUCCESS: The process with PID 18000 (child process of PID 17644) has been terminated.
+SUCCESS: The process with PID 17644 (child process of PID 3732) has been terminated.
+SUCCESS: The process with PID 3732 (child process of PID 22908) has been terminated.

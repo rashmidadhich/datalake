@@ -1,0 +1,16 @@
+store_id,store_name,region,city,store_type
+ST-001,Delhi Superstore,North,Delhi,Supermarket
+ST-002,Chennai Mart,South,Chennai,Convenience
+ST-003,Guwahati Express,East,Guwahati,Supermarket
+ST-004,Mumbai Mart,West,Mumbai,Supermarket
+ST-005,Bhopal Superstore,Central,Bhopal,Supermarket
+ST-006,Lucknow Superstore,North,Lucknow,Convenience
+ST-007,Bengaluru Superstore,South,Bengaluru,Supermarket
+ST-008,Bhubaneswar Superstore,East,Bhubaneswar,Express
+ST-009,Ahmedabad Mart,West,Ahmedabad,Supermarket
+ST-010,Indore Mart,Central,Indore,Supermarket
+ST-011,Jaipur Mart,North,Jaipur,Convenience
+ST-012,Hyderabad Superstore,South,Hyderabad,Supermarket
+ST-013,Kolkata Superstore,East,Kolkata,Supermarket
+ST-014,Pune Superstore,West,Pune,Convenience
+ST-015,Nagpur Superstore,Central,Nagpur,Convenience

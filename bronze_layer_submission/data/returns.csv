@@ -1,0 +1,47 @@
+return_id,order_id,return_date,return_reason
+R-0001,O-00089,2026-04-20,Customer Changed Mind
+R-0002,O-00099,2026-02-06,Damaged
+R-0003,O-00103,2026-03-29,Wrong Item
+R-0004,O-00030,2026-04-23,Customer Changed Mind
+R-0005,O-00128,2026-04-01,Wrong Item
+R-0006,O-00017,2026-04-06,Customer Changed Mind
+R-0007,O-00234,2026-01-12,Late Delivery
+R-0008,O-00026,2026-04-20,Quality Issue
+R-0009,O-00185,2026-02-22,Quality Issue
+R-0010,O-00102,2026-05-08,Wrong Item
+R-0011,O-00141,2026-03-11,Late Delivery
+R-0012,O-00189,2026-02-02,Customer Changed Mind
+R-0013,O-00238,2026-04-19,Customer Changed Mind
+R-0014,O-00259,2026-04-07,Damaged
+R-0015,O-00204,2026-05-13,Late Delivery
+R-0016,O-00326,2026-03-27,Customer Changed Mind
+R-0017,O-00064,2026-02-01,Late Delivery
+R-0018,O-00349,2026-04-28,Damaged
+R-0019,O-00016,2026-03-14,Damaged
+R-0020,O-00124,2026-03-10,Late Delivery
+R-0021,O-00191,2026-02-15,Late Delivery
+R-0022,O-00251,2026-02-04,Late Delivery
+R-0023,O-00305,2026-02-05,Wrong Item
+R-0024,O-00229,2026-04-07,Wrong Item
+R-0025,O-00091,2026-04-28,Customer Changed Mind
+R-0026,O-00243,2026-01-25,Late Delivery
+R-0027,O-00301,2026-03-12,Damaged
+R-0028,O-00283,2026-01-28,Late Delivery
+R-0029,O-00180,2026-02-21,Quality Issue
+R-0030,O-00177,2026-03-06,Quality Issue
+R-0031,O-00084,2026-03-03,Customer Changed Mind
+R-0032,O-00133,2026-04-26,Wrong Item
+R-0033,O-00353,2026-03-11,Wrong Item
+R-0034,O-00047,2026-02-24,Quality Issue
+R-0035,O-00146,2026-02-12,Customer Changed Mind
+R-0036,O-00015,2026-02-18,Wrong Item
+R-0037,O-00198,2026-05-08,Wrong Item
+R-0038,O-00293,2026-03-01,Damaged
+R-0039,O-00110,2026-03-12,Wrong Item
+R-0040,O-00114,2026-04-23,Customer Changed Mind
+R-0041,O-00332,2026-02-17,Late Delivery
+R-0042,O-00116,2026-04-16,Wrong Item
+R-0043,O-00347,2026-01-18,Wrong Item
+R-0044,O-00106,2026-04-07,Quality Issue
+R-0045,O-00138,2026-02-11,Late Delivery
+R-0046,O-00334,2026-01-10,Customer Changed Mind

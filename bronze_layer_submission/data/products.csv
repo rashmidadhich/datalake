@@ -1,0 +1,11 @@
+product_id,product_name,category,sub_category,base_price
+P-001,Tea Premium,Beverages,Tea,399
+P-002,Cold Brew,Beverages,Cold,149
+P-003,Rice 5kg,Groceries,Rice,599
+P-004,Cooking Oil,Groceries,Cooking,199
+P-005,Herbal Shampoo,Personal Care,Herbal,49
+P-006,Face Wash,Personal Care,Face,99
+P-007,Detergent,Household,Detergent,399
+P-008,Floor Cleaner,Household,Floor,249
+P-009,Protein Bar,Snacks,Protein,199
+P-010,Trail Mix,Snacks,Trail,99

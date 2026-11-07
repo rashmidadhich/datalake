@@ -1,0 +1,15 @@
+# PostgreSQL database adapter (psycopg 3 with pre-built binaries)
+psycopg[binary]>=3.1.0
+
+# Oracle Database driver (supports Thin and Thick modes)
+oracledb>=2.0.0
+
+# Parquet file format engine (multi-mode ingestion)
+pyarrow>=14.0.0
+
+# Environment variable loader (.env file support)
+python-dotenv>=1.0.0
+
+# TOML parsing compatibility for Python < 3.11
+tomli>=2.0.1; python_version < "3.11"
+

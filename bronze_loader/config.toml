@@ -1,0 +1,293 @@
+# Credentials come from the .env file or environment variables, never from this file:
+#   PG_DSN="host=... dbname=lake user=... password=..."
+#   ORA_SZ_DSN / ORA_SZ_USER / ORA_SZ_PASSWORD   (one set per zone: SZ, WZ, NZ, EZ)
+
+[settings]
+log_file = "logs/bronze_sync.log"
+arraysize = 50000          # rows per Oracle fetch
+retries = 2                # extra attempts per chunk
+retry_sleep = 5            # seconds between attempts (multiplied by attempt number)
+workers_per_zone = 4       # max concurrent Oracle sessions per zone
+
+# --------------------------------------------------------------- North Zone (NZ) SAP CRM -> CFA360
+[[zone]]
+name = "NZ"
+schemas = ["CRM"]          # North Zone SAP/CRM schema
+include = [
+  "IBIB", "BUT000", "BUT021_FS", "ADRC", "ADR2", "ADR6",
+  "CRMD_ORDERADM_H", "CRMD_ORDERADM_I", "CRMD_ORDER_INDEX",
+  "CRM_JEST", "TJ30T", "BUT050"
+]
+exclude = ["TMP_*", "*_BKP", "*$*"]
+
+[[table]]
+zone = "NZ"
+name = "IBIB"              # Installed base master (unique per service row)
+mode = "merge"
+pk = ["IBASE"]
+watermark_col = "UPTIM"    # Record update timestamp
+lookback_hours = 48
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+dq_rules = { required_cols = ["IBASE"] }
+
+[[table]]
+zone = "NZ"
+name = "BUT000"            # Business Partner master
+mode = "merge"
+pk = ["PARTNER"]
+watermark_col = "CHDAT"    # Changed date (incremental key)
+lookback_hours = 48
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+dq_rules = { required_cols = ["PARTNER"] }
+
+[[table]]
+zone = "NZ"
+name = "BUT021_FS"         # Partner address uses
+mode = "merge"
+pk = ["PARTNER", "ADDRNUMBER", "ADR_KIND"]
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+
+[[table]]
+zone = "NZ"
+name = "ADRC"              # Installation and customer addresses
+mode = "merge"
+pk = ["ADDRNUMBER"]
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+
+[[table]]
+zone = "NZ"
+name = "ADR2"              # Telephone and mobile numbers
+mode = "merge"
+pk = ["ADDRNUMBER", "CONSNUMBER"]
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+
+[[table]]
+zone = "NZ"
+name = "ADR6"              # Email addresses
+mode = "merge"
+pk = ["ADDRNUMBER", "CONSNUMBER"]
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+
+[[table]]
+zone = "NZ"
+name = "CRMD_ORDERADM_H"   # CRM Order Header (orders, changes, disconnects)
+mode = "merge"
+pk = ["GUID"]
+watermark_col = "CHANGED_AT" # Order changed timestamp
+lookback_hours = 48
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+dq_rules = { required_cols = ["GUID", "OBJECT_ID"] }
+
+[[table]]
+zone = "NZ"
+name = "CRMD_ORDERADM_I"   # CRM Order Item
+mode = "merge"
+pk = ["GUID"]
+watermark_col = "CHANGED_AT"
+lookback_hours = 48
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+
+[[table]]
+zone = "NZ"
+name = "CRMD_ORDER_INDEX"  # CRM Order Index
+mode = "merge"
+pk = ["HEADER", "ITEM"]
+watermark_col = "DATE_1"
+lookback_hours = 48
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+
+[[table]]
+zone = "NZ"
+name = "CRM_JEST"          # Individual Status per Object
+mode = "merge"
+pk = ["OBJNR", "STAT"]
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+
+[[table]]
+zone = "NZ"
+name = "TJ30T"             # Status Texts
+mode = "merge"
+pk = ["STSMA", "ESTAT", "SPRAS"]
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+
+[[table]]
+zone = "NZ"
+name = "BUT050"            # BP Relationships (CA / BA links)
+mode = "merge"
+pk = ["RELNR"]
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+
+# --------------------------------------------------------------- East Zone (EZ) Siebel CRM -> CFA360
+[[zone]]
+name = "EZ"
+schemas = ["SIEBEL"]       # East Zone Siebel schema
+include = [
+  "S_ORDER", "S_ORDER_X", "S_ORDER_TYPE", "S_ORG_EXT", "S_ORG_EXT_X", "S_ORG_EXT_XM",
+  "S_ASSET", "S_ASSET_X", "S_ASSET_XA", "S_ASSET_XM", "S_ADDR_PER", "S_CONTACT", "S_SRV_REQ"
+]
+exclude = ["TMP_*", "*_BKP", "*$*"]
+
+[[table]]
+zone = "EZ"
+name = "S_ORDER"           # Orders header
+mode = "merge"
+pk = ["ROW_ID"]
+watermark_col = "LAST_UPD"
+lookback_hours = 48
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+dq_rules = { required_cols = ["ROW_ID"] }
+
+[[table]]
+zone = "EZ"
+name = "S_ORDER_X"         # Order custom extensions (GP code, village code)
+mode = "merge"
+pk = ["ROW_ID"]
+watermark_col = "LAST_UPD"
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+
+[[table]]
+zone = "EZ"
+name = "S_ORDER_TYPE"      # Order types
+mode = "merge"
+pk = ["ROW_ID"]
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+
+[[table]]
+zone = "EZ"
+name = "S_ORG_EXT"         # Accounts & billing accounts
+mode = "merge"
+pk = ["ROW_ID"]
+watermark_col = "LAST_UPD"
+lookback_hours = 48
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+dq_rules = { required_cols = ["ROW_ID"] }
+
+[[table]]
+zone = "EZ"
+name = "S_ORG_EXT_X"       # Account custom extensions
+mode = "merge"
+pk = ["ROW_ID"]
+watermark_col = "LAST_UPD"
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+
+[[table]]
+zone = "EZ"
+name = "S_ORG_EXT_XM"      # Account multi-value extensions
+mode = "merge"
+pk = ["ROW_ID"]
+watermark_col = "LAST_UPD"
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+
+[[table]]
+zone = "EZ"
+name = "S_ASSET"           # Installed services / assets
+mode = "merge"
+pk = ["ROW_ID"]
+watermark_col = "LAST_UPD"
+lookback_hours = 48
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+dq_rules = { required_cols = ["ROW_ID"] }
+
+[[table]]
+zone = "EZ"
+name = "S_ASSET_X"         # Asset custom extensions (village, BNU)
+mode = "merge"
+pk = ["ROW_ID"]
+watermark_col = "LAST_UPD"
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+
+[[table]]
+zone = "EZ"
+name = "S_ASSET_XA"        # Asset configurable attribute name/value pairs
+mode = "merge"
+pk = ["ROW_ID"]
+watermark_col = "LAST_UPD"
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+
+[[table]]
+zone = "EZ"
+name = "S_ASSET_XM"        # Asset multi-value extensions
+mode = "merge"
+pk = ["ROW_ID"]
+watermark_col = "LAST_UPD"
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+
+[[table]]
+zone = "EZ"
+name = "S_ADDR_PER"        # Installation & customer addresses
+mode = "merge"
+pk = ["ROW_ID"]
+watermark_col = "LAST_UPD"
+lookback_hours = 48
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+dq_rules = { required_cols = ["ROW_ID"] }
+
+[[table]]
+zone = "EZ"
+name = "S_CONTACT"         # Persons / contact master
+mode = "merge"
+pk = ["ROW_ID"]
+watermark_col = "LAST_UPD"
+lookback_hours = 48
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+dq_rules = { required_cols = ["ROW_ID"] }
+
+[[table]]
+zone = "EZ"
+name = "S_SRV_REQ"         # Service Requests / Complaints
+mode = "merge"
+pk = ["ROW_ID"]
+watermark_col = "LAST_UPD"
+lookback_hours = 48
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+dq_rules = { required_cols = ["ROW_ID"] }

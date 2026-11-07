@@ -1,0 +1,4 @@
+customer_id,customer_segment,signup_date,preferred_channel,city,loyalty_tier,marketing_opt_in
+C-0081,Regular,2026-05-05,Online,Lucknow,Silver,Yes
+C-0082,Premium,2026-05-05,Mobile App,Nagpur,Gold,No
+C-0083,Budget,2026-05-06,In-store,Kochi,Bronze,Yes

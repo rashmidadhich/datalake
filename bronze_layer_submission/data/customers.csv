@@ -1,0 +1,81 @@
+customer_id,customer_segment,signup_date,preferred_channel,city
+C-0001,Regular,2026-01-26,Mobile App,Jaipur
+C-0002,Budget,2025-07-14,Online,Hyderabad
+C-0003,Premium,2025-11-06,Mobile App,Indore
+C-0004,Budget,2026-01-09,Partner,Guwahati
+C-0005,Budget,2025-07-13,Online,Guwahati
+C-0006,Premium,2025-11-18,Mobile App,Mumbai
+C-0007,Regular,2025-12-27,Online,Delhi
+C-0008,Regular,2026-01-31,Mobile App,Jaipur
+C-0009,Regular,2025-02-21,Partner,Chennai
+C-0010,Wholesale,2025-11-22,Mobile App,Lucknow
+C-0011,Premium,2025-07-01,In-store,Pune
+C-0012,Premium,2025-12-26,Online,Mumbai
+C-0013,Regular,2025-10-01,In-store,Lucknow
+C-0014,Wholesale,2025-07-14,Mobile App,Nagpur
+C-0015,Regular,2025-12-17,Mobile App,Bhopal
+C-0016,Budget,2025-04-28,Online,Indore
+C-0017,Premium,2025-07-25,Mobile App,Jaipur
+C-0018,Regular,2025-10-18,Mobile App,Bengaluru
+C-0019,Wholesale,2025-07-22,Partner,Lucknow
+C-0020,Premium,2025-03-13,In-store,Ahmedabad
+C-0021,Premium,2026-01-18,Partner,Nagpur
+C-0022,Wholesale,2025-07-05,In-store,Lucknow
+C-0023,Wholesale,2025-02-16,Online,Bhopal
+C-0024,Budget,2025-03-20,In-store,Indore
+C-0025,Wholesale,2025-11-02,Online,Kolkata
+C-0026,Wholesale,2025-11-02,Partner,Guwahati
+C-0027,Premium,2025-10-11,Online,Pune
+C-0028,Budget,2025-12-16,Mobile App,Indore
+C-0029,Premium,2025-02-27,Mobile App,Kolkata
+C-0030,Regular,2025-08-21,Online,Ahmedabad
+C-0031,Premium,2025-09-14,In-store,Guwahati
+C-0032,Budget,2025-11-17,Mobile App,Bhopal
+C-0033,Regular,2025-03-20,Mobile App,Indore
+C-0034,Regular,2025-10-04,Online,Mumbai
+C-0035,Premium,2025-09-08,Online,Jaipur
+C-0036,Premium,2026-02-18,Mobile App,Bengaluru
+C-0037,Budget,2025-05-04,Online,Jaipur
+C-0038,Wholesale,2026-02-22,Online,Indore
+C-0039,Regular,2025-03-07,Partner,Guwahati
+C-0040,Regular,2025-05-16,Partner,Bengaluru
+C-0041,Regular,2026-01-01,Mobile App,Kolkata
+C-0042,Premium,2025-08-13,Partner,Jaipur
+C-0043,Regular,2025-04-26,Online,Hyderabad
+C-0044,Budget,2025-10-29,In-store,Mumbai
+C-0045,Regular,2025-01-04,Online,Ahmedabad
+C-0046,Budget,2025-04-28,Online,Nagpur
+C-0047,Budget,2025-06-19,Online,Guwahati
+C-0048,Regular,2025-05-23,Partner,Bengaluru
+C-0049,Regular,2026-01-06,Partner,Bengaluru
+C-0050,Wholesale,2026-02-18,Partner,Bengaluru
+C-0051,Budget,2025-02-19,Partner,Hyderabad
+C-0052,Wholesale,2025-07-30,Partner,Bhopal
+C-0053,Budget,2025-12-11,Online,Delhi
+C-0054,Wholesale,2026-01-08,Mobile App,Indore
+C-0055,Budget,2025-05-08,In-store,Bengaluru
+C-0056,Wholesale,2025-03-13,Partner,Lucknow
+C-0057,Premium,2025-08-25,In-store,Bhopal
+C-0058,Budget,2025-08-15,Online,Delhi
+C-0059,Budget,2025-02-17,In-store,Lucknow
+C-0060,Wholesale,2025-09-06,Partner,Bengaluru
+C-0061,Wholesale,2025-01-31,In-store,Kolkata
+C-0062,Budget,2025-07-19,Mobile App,Nagpur
+C-0063,Wholesale,2025-05-27,Partner,Ahmedabad
+C-0064,Wholesale,2025-03-21,In-store,Chennai
+C-0065,Regular,2025-01-30,Online,Ahmedabad
+C-0066,Premium,2025-01-30,Online,Mumbai
+C-0067,Wholesale,2025-09-15,In-store,Delhi
+C-0068,Budget,2025-04-06,Online,Mumbai
+C-0069,Budget,2025-12-12,In-store,Kolkata
+C-0070,Budget,2025-10-19,In-store,Mumbai
+C-0071,Budget,2025-11-14,Online,Kolkata
+C-0072,Premium,2025-05-14,In-store,Pune
+C-0073,Premium,2025-05-03,Mobile App,Kolkata
+C-0074,Regular,2025-12-10,Mobile App,Bhubaneswar
+C-0075,Premium,2026-01-20,Online,Delhi
+C-0076,Wholesale,2025-11-15,Online,Jaipur
+C-0077,Regular,2025-09-17,Mobile App,Lucknow
+C-0078,Premium,2025-02-05,In-store,Hyderabad
+C-0079,Premium,2025-03-22,Partner,Bhopal
+C-0080,Premium,2025-11-10,Online,Pune

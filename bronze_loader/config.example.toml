@@ -1,0 +1,174 @@
+# Credentials come from the .env file or environment variables, never from this file:
+#   PG_DSN="host=... dbname=lake user=... password=..."
+#   ORA_SZ_DSN / ORA_SZ_USER / ORA_SZ_PASSWORD   (one set per zone: SZ, WZ, NZ, EZ)
+
+[settings]
+log_file = "logs/bronze_sync.log"
+arraysize = 50000          # rows per Oracle fetch
+retries = 2                # extra attempts per chunk
+retry_sleep = 5            # seconds between attempts (multiplied by attempt number)
+workers_per_zone = 4       # max concurrent Oracle sessions per zone
+
+[[zone]]
+name = "SZ"
+schemas = ["PORTAL"]       # Oracle owners to copy
+include = ["*"]
+exclude = ["TMP_*", "*_BKP", "*$*"]
+
+# Per-table tuning. Anything not listed gets a default: merge if it has a PK and a watermark,
+# append if it has a watermark/chunk column, else full_refresh (small tables only!).
+[[table]]
+zone = "SZ"
+name = "DATA_USAGE"        # example: huge immutable IPDR table
+mode = "append"
+chunk_col = "SESSION_START_TIME"
+watermark_col = "SESSION_START_TIME"
+chunk_days = 1             # historic load = one chunk per day
+partitioned = true         # monthly partitions in Postgres
+lookback_hours = 6
+oracle_hint = "/*+ PARALLEL(t 4) */"
+verify_counts = true       # compare Oracle COUNT(*) with rows loaded, per chunk
+freshness_sla_hours = 3
+
+[[table]]
+zone = "SZ"
+name = "CUSTOMER_MASTER"   # example: mutable master with a primary key
+mode = "merge"
+watermark_col = "LAST_UPDATED_DATE"
+lookback_hours = 48
+check_duplicates = true     # detect intra-chunk duplicate PKs
+check_idempotency = true    # skip already completed chunks
+quarantine_enabled = true   # route bad rows to bronze_ctl.load_quarantine
+dq_rules = { required_cols = ["CUST_ID"] }
+
+# --------------------------------------------------------------- North Zone (NZ) SAP -> CFA360
+[[zone]]
+name = "NZ"
+schemas = ["CRM"]          # North Zone SAP/CRM schema
+include = [
+  "IBIB", "BUT000", "BUT021_FS", "ADRC", "ADR2", "ADR6",
+  "CRMD_ORDERADM_H", "CRMD_ORDERADM_I", "CRMD_ORDER_INDEX",
+  "CRM_JEST", "TJ30T", "BUT050"
+]
+exclude = ["TMP_*", "*_BKP", "*$*"]
+
+[[table]]
+zone = "NZ"
+name = "IBIB"              # Installed base master (unique per service row)
+mode = "merge"
+pk = ["IBASE"]
+watermark_col = "UPTIM"    # Record update timestamp
+lookback_hours = 48
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+dq_rules = { required_cols = ["IBASE"] }
+
+[[table]]
+zone = "NZ"
+name = "BUT000"            # Business Partner master
+mode = "merge"
+pk = ["PARTNER"]
+watermark_col = "CHDAT"    # Changed date (incremental key)
+lookback_hours = 48
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+dq_rules = { required_cols = ["PARTNER"] }
+
+[[table]]
+zone = "NZ"
+name = "BUT021_FS"         # Partner address uses
+mode = "merge"
+pk = ["PARTNER", "ADDRNUMBER", "ADR_KIND"]
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+
+[[table]]
+zone = "NZ"
+name = "ADRC"              # Installation and customer addresses
+mode = "merge"
+pk = ["ADDRNUMBER"]
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+
+[[table]]
+zone = "NZ"
+name = "ADR2"              # Telephone and mobile numbers
+mode = "merge"
+pk = ["ADDRNUMBER", "CONSNUMBER"]
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+
+[[table]]
+zone = "NZ"
+name = "ADR6"              # Email addresses
+mode = "merge"
+pk = ["ADDRNUMBER", "CONSNUMBER"]
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+
+[[table]]
+zone = "NZ"
+name = "CRMD_ORDERADM_H"   # CRM Order Header (orders, changes, disconnects)
+mode = "merge"
+pk = ["GUID"]
+watermark_col = "CHANGED_AT" # Order changed timestamp
+lookback_hours = 48
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+dq_rules = { required_cols = ["GUID", "OBJECT_ID"] }
+
+[[table]]
+zone = "NZ"
+name = "CRMD_ORDERADM_I"   # CRM Order Item
+mode = "merge"
+pk = ["GUID"]
+watermark_col = "CHANGED_AT"
+lookback_hours = 48
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+
+[[table]]
+zone = "NZ"
+name = "CRMD_ORDER_INDEX"  # CRM Order Index
+mode = "merge"
+pk = ["HEADER", "ITEM"]
+watermark_col = "DATE_1"
+lookback_hours = 48
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+
+[[table]]
+zone = "NZ"
+name = "CRM_JEST"          # Individual Status per Object
+mode = "merge"
+pk = ["OBJNR", "STAT"]
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+
+[[table]]
+zone = "NZ"
+name = "TJ30T"             # Status Texts
+mode = "merge"
+pk = ["STSMA", "ESTAT", "SPRAS"]
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true
+
+[[table]]
+zone = "NZ"
+name = "BUT050"            # BP Relationships (CA / BA links)
+mode = "merge"
+pk = ["RELNR"]
+check_duplicates = true
+check_idempotency = true
+quarantine_enabled = true

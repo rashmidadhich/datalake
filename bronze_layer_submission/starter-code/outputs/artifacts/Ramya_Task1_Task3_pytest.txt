@@ -1,0 +1,5 @@
+.....                                                                    [100%]
+5 passed in 64.44s (0:01:04)
+SUCCESS: The process with PID 18836 (child process of PID 34308) has been terminated.
+SUCCESS: The process with PID 34308 (child process of PID 3112) has been terminated.
+SUCCESS: The process with PID 3112 (child process of PID 20996) has been terminated.
