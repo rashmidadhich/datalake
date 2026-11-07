@@ -1,0 +1,7 @@
+plan_id,plan_name,monthly_price,tier
+PLAN-BASIC,Basic Monthly,9.99,Entry
+PLAN-SILVER,Silver Monthly,19.99,Mid
+PLAN-GOLD,Gold Monthly,29.99,Mid
+PLAN-PLATINUM,Platinum Annual,249,Premium
+PLAN-STUDENT,Student Discount,4.99,Entry
+PLAN-ENTERPRISE,Enterprise Custom,499,Premium

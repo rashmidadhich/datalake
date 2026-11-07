@@ -1,0 +1,5 @@
+account_id,customer_name,email_masked,signup_date,source_system,plan_id,status
+ACC-0101,Sara Haddad,s***@trb3***.com,01/20/2026,platform_v2,plan-gold,active
+ACC-0102,Priya Okoye,p***@trb4***.com,11/30/2025,platform_v2,PLAN-STUDENT,active
+ACC-0103,Elena Okoye,e***@trb5***.com,09/26/2025,platform_v2,plan-platinum,active
+ACC-0104,Nina Costa,n***@trb6***.com,December 11, 2025,platform_v2,PLAN-GOLD,active
