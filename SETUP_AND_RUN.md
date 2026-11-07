@@ -112,6 +112,9 @@ set TRB_SPARK_MASTER=local[4]
 
 ## 6. Verify the Parquet outputs
 
+pip install duckdb
+python -c "import duckdb, glob; f=glob.glob('*.parquet')[0]; print('File:', f); print(duckdb.query('SELECT * FROM read_parquet(?) LIMIT 5', params=[f]).df().to_string(index=False))"
+
 * One command: `.venv\Scripts\python.exe -m tools.verify_outputs`
   (no Spark needed; writes `outputs/artifacts/verify_outputs.md` and exits
   non-zero if any check fails).
